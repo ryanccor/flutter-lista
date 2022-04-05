@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lista/src/lista.dart';
+import 'package:flutter_lista/src/list.dart';
 
 void main() {
   runApp(const MainWidget());
