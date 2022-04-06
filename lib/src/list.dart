@@ -4,12 +4,19 @@ import 'package:flutter_lista/service/contact_service.dart';
 
 import 'cadastro.dart';
 
-class ListaWidget extends StatelessWidget {
+class ListaWidget extends StatefulWidget {
   const ListaWidget({Key? key}) : super(key: key);
 
   @override
+  State<ListaWidget> createState() => _ListaWidgetState();
+}
+
+class _ListaWidgetState extends State<ListaWidget> {
+  @override
   Widget build(BuildContext context) {
     var contactService = ContactService();
+
+    List<Contact> contacts = contactService.getAll()!;
 
     contactService.save(
       Contact(
@@ -29,6 +36,7 @@ class ListaWidget extends StatelessWidget {
           email: "tha.aze@mail.com",
           phoneNumber: "22 22222-2222"),
     );
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Lista de Contatos"),
@@ -36,8 +44,7 @@ class ListaWidget extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: ListBody(
-            children: contactService
-                .getAll()!
+            children: contacts
                 .map((e) => Card(
                       child: ListTile(
                         title: Text(e.name!),
@@ -114,7 +121,11 @@ class ListaWidget extends StatelessWidget {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return ContactFormPage();
-          }));
+          })).then((value) {
+            setState(() {
+              contacts = contactService.getAll()!;
+            });
+          });
         },
       ),
     );
