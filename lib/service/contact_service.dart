@@ -31,3 +31,5 @@ class ContactService {
     _contacts[contact.id!] = contact;
   }
 }
+
+enum ContactAction { edit, sendEmail, call, delete }
