@@ -2,13 +2,12 @@ import '../model/contact.dart';
 
 class ContactService {
   static final Map<int, Contact> _contacts = {};
-  static int idCounter = 1;
 
-  int save(Contact contact) {
-    int newId = idCounter++;
-    contact.id = newId;
+  int save(contact) {
+    int newId = _contacts.length;
 
-    _contacts[newId] = contact.copy;
+    _contacts[newId] = Contact(newId, contact["name"],
+        email: contact["email"], phoneNumber: contact["phoneNumber"]);
     return newId;
   }
 
@@ -28,7 +27,7 @@ class ContactService {
     if (contact.id == null) {
       throw Exception("id cannot be null");
     }
-    _contacts[contact.id!] = contact;
+    _contacts[contact.id] = contact;
   }
 }
 

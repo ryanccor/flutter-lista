@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lista/model/contact.dart';
 import 'package:flutter_lista/service/contact_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'cadastro.dart';
 
@@ -18,28 +19,6 @@ class _ListaWidgetState extends State<ListaWidget> {
 
     List<Contact> contacts = contactService.getAll()!;
 
-    contactService.save(
-      Contact(
-          name: "Hudson Rodrigues",
-          email: "hud.rod@mail.com",
-          phoneNumber: "00 00000-0000",
-          image: "https://picsum.photos/100"),
-    );
-    contactService.save(
-      Contact(
-          name: "Ryan Cordeiro",
-          email: "ryan.cor@mail.com",
-          phoneNumber: "11 11111-1111",
-          image: "https://picsum.photos/100"),
-    );
-    contactService.save(
-      Contact(
-          name: "Thales Azevedo",
-          email: "tha.aze@mail.com",
-          phoneNumber: "22 22222-2222",
-          image: "https://picsum.photos/100"),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Lista de Contatos"),
@@ -48,33 +27,34 @@ class _ListaWidgetState extends State<ListaWidget> {
         child: SingleChildScrollView(
           child: ListBody(
             children: contacts
-                .map((e) => Card(
+                .map((contact) => Card(
                       child: ListTile(
-                        title: Text(e.name!),
-                        subtitle: Text("${e.phoneNumber} - ${e.email}"),
+                        title: Text(contact.name),
+                        subtitle:
+                            Text("${contact.phoneNumber} - ${contact.email}"),
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(e.image ??
-                              "https://picsum.photos/seed/${e.name}/100"),
+                          backgroundImage: NetworkImage(contact.image ??
+                              "https://picsum.photos/seed/${contact.name}/100"),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return ContactFormPage(
+                              contact: contact,
+                            );
+                          })).then((value) {
+                            setState(() {
+                              contacts = contactService.getAll()!;
+                            });
+                          });
+                        },
                         trailing: PopupMenuButton(
                           itemBuilder: (context) => [
                             PopupMenuItem(
-                              value: ContactAction.edit,
-                              onTap: () {},
-                              child: Row(
-                                children: [
-                                  Icon(Icons.edit),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Text("Editar")
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem(
                               value: ContactAction.call,
-                              onTap: () {},
+                              onTap: () async {
+                                launch("tel://${contact.phoneNumber}");
+                              },
                               child: Row(
                                 children: [
                                   Icon(Icons.call),
@@ -87,7 +67,9 @@ class _ListaWidgetState extends State<ListaWidget> {
                             ),
                             PopupMenuItem(
                               value: ContactAction.sendEmail,
-                              onTap: () {},
+                              onTap: () async {
+                                launch("mailto:${contact.email!}");
+                              },
                               child: Row(
                                 children: [
                                   Icon(Icons.mail),
@@ -100,14 +82,19 @@ class _ListaWidgetState extends State<ListaWidget> {
                             ),
                             PopupMenuItem(
                               value: ContactAction.delete,
-                              onTap: () {},
+                              onTap: () {
+                                contactService.deleteById(contact.id);
+                                setState(() {
+                                  contacts = contactService.getAll()!;
+                                });
+                              },
                               child: Row(
                                 children: [
                                   Icon(Icons.delete),
                                   SizedBox(
                                     width: 20,
                                   ),
-                                  Text("Deletar")
+                                  Text("Apagar")
                                 ],
                               ),
                             ),

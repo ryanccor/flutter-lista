@@ -4,26 +4,31 @@ import 'package:flutter_lista/service/contact_service.dart';
 import '../model/contact.dart';
 
 class ContactFormPage extends StatelessWidget {
+  ContactFormPage({Key? key, this.contact}) : super(key: key);
+
   final ContactService _contactService = ContactService();
-  ContactFormPage({Key? key}) : super(key: key);
+  final Contact? contact;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Cadastro de Contatos")),
       body: Container(
-        child: ContactForm(_contactService),
+        child: ContactForm(_contactService, contact),
       ),
     );
   }
 }
 
 class ContactForm extends StatefulWidget {
+  const ContactForm(this.contactService, this.contact, {Key? key})
+      : super(key: key);
   final ContactService contactService;
-  const ContactForm(this.contactService, {Key? key}) : super(key: key);
+  final Contact? contact;
 
   @override
-  State<ContactForm> createState() => _ContactFormState();
+  State<ContactForm> createState() =>
+      _ContactFormState(contactService, contact);
 }
 
 String? validateEmpty(String? value, String fieldName) {
@@ -31,13 +36,21 @@ String? validateEmpty(String? value, String fieldName) {
 }
 
 class _ContactFormState extends State<ContactForm> {
+  _ContactFormState(this.contactService, this.contact);
+  final Contact? contact;
+  final ContactService contactService;
   final nameController = TextEditingController();
-  final phoneController = TextEditingController();
   final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    if (contact != null) {
+      nameController.text = contact!.name;
+      emailController.text = contact!.email!;
+      phoneController.text = contact!.phoneNumber!;
+    }
     return Form(
         key: _formKey,
         child: Column(
@@ -63,11 +76,22 @@ class _ContactFormState extends State<ContactForm> {
             Container(
               child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Contact newContact = Contact(
-                          name: nameController.value.text,
-                          email: emailController.value.text,
-                          phoneNumber: phoneController.value.text);
+                    if (contact != null) {
+                      if (_formKey.currentState!.validate()) {
+                        Contact updatedContact = Contact(
+                            contact!.id, nameController.value.text,
+                            email: emailController.value.text,
+                            phoneNumber: phoneController.value.text);
+                        widget.contactService.update(updatedContact);
+
+                        Navigator.pop(context);
+                      }
+                    } else if (_formKey.currentState!.validate()) {
+                      var newContact = {
+                        "name": nameController.value.text,
+                        "email": emailController.value.text,
+                        "phoneNumber": phoneController.value.text
+                      };
                       widget.contactService.save(newContact);
                       Navigator.pop(context);
                     }
