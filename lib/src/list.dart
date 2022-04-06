@@ -22,19 +22,22 @@ class _ListaWidgetState extends State<ListaWidget> {
       Contact(
           name: "Hudson Rodrigues",
           email: "hud.rod@mail.com",
-          phoneNumber: "00 00000-0000"),
+          phoneNumber: "00 00000-0000",
+          image: "https://picsum.photos/100"),
     );
     contactService.save(
       Contact(
           name: "Ryan Cordeiro",
           email: "ryan.cor@mail.com",
-          phoneNumber: "11 11111-1111"),
+          phoneNumber: "11 11111-1111",
+          image: "https://picsum.photos/100"),
     );
     contactService.save(
       Contact(
           name: "Thales Azevedo",
           email: "tha.aze@mail.com",
-          phoneNumber: "22 22222-2222"),
+          phoneNumber: "22 22222-2222",
+          image: "https://picsum.photos/100"),
     );
 
     return Scaffold(
@@ -50,8 +53,8 @@ class _ListaWidgetState extends State<ListaWidget> {
                         title: Text(e.name!),
                         subtitle: Text("${e.phoneNumber} - ${e.email}"),
                         leading: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage("https://picsum.photos/100"),
+                          backgroundImage: NetworkImage(e.image ??
+                              "https://picsum.photos/seed/${e.name}/100"),
                         ),
                         onTap: () {},
                         trailing: PopupMenuButton(
