@@ -5,15 +5,14 @@ void main() {
   runApp(const MainWidget());
 }
 
-
 class MainWidget extends StatelessWidget {
   const MainWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: ListaWidget(),);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ListaWidget(),
+    );
   }
 }
-
-
-
