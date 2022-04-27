@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import '../model/contact.dart';
+import 'file_storage.dart';
 
 class ContactService {
   static final Map<int, Contact> _contacts = {};
@@ -24,11 +28,32 @@ class ContactService {
   }
 
   void update(Contact contact) {
-    if (contact.id == null) {
-      throw Exception("id cannot be null");
-    }
     _contacts[contact.id] = contact;
   }
+
+  dynamic exportContactFile() async {
+    // try {
+    FileStorage fileStorage = FileStorage();
+
+    String _fileContent = _contacts[0]!.toJson().toString();
+    print("CONTENT: " + _fileContent);
+
+    fileStorage.writeFile(_fileContent);
+
+    File _exportFileName = File("exportedContacts.txt");
+    print(_exportFileName);
+
+    // var _directory = getApplicationDocumentsDirectory();
+    // var exportFile = _directory; // + "/exportedContacts.txt";
+    // print(exportFile);
+
+    await _exportFileName.writeAsString(_fileContent);
+    return true;
+    // } on Exception catch (erro) {
+    //   print("Errou essa parada aqui!\n\n $erro");
+    //   return false;
+  }
 }
+// }
 
 enum ContactAction { edit, sendEmail, call, delete }

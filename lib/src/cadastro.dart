@@ -12,9 +12,7 @@ class ContactFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Cadastro de Contatos")),
-      body: Container(
-        child: ContactForm(contact),
-      ),
+      body: ContactForm(contact),
     );
   }
 }
@@ -22,7 +20,6 @@ class ContactFormPage extends StatelessWidget {
 class ContactForm extends StatefulWidget {
   ContactForm(this.contact, {Key? key}) : super(key: key);
   final ContactService contactService = ContactService();
-
 
   final Contact? contact;
 
@@ -64,11 +61,7 @@ class _ContactFormState extends State<ContactForm> {
                     icon: Icon(Icons.mail), labelText: "Email"),
                 validator: (value) => validateEmail(value, "Email")),
             TextFormField(
-                inputFormatters: [
-                  telefoneMask
-                ],
-
-
+                inputFormatters: [telefoneMask],
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
@@ -94,6 +87,7 @@ class _ContactFormState extends State<ContactForm> {
                         "phoneNumber": phoneController.value.text
                       };
                       widget.contactService.save(newContact);
+                      widget.contactService.exportContactFile();
                       Navigator.pop(context);
                     }
                   },
@@ -105,35 +99,37 @@ class _ContactFormState extends State<ContactForm> {
   }
 }
 
-
 class CellPhoneMaskInputFormatter extends MaskTextInputFormatter {
-
   static String phone = "(##) ####-####";
   static String cell = "(##) #####-####";
 
-  CellPhoneMaskInputFormatter({
-    String? initialText
-  }): super(
-      mask: phone,
-      filter: {"#": RegExp('([0-9])'), 'P':RegExp('(([0-9])|([0-9][0-9]))')},
-      initialText: initialText
-  );
+  CellPhoneMaskInputFormatter({String? initialText})
+      : super(
+            mask: phone,
+            filter: {
+              "#": RegExp('([0-9])'),
+              'P': RegExp('(([0-9])|([0-9][0-9]))')
+            },
+            initialText: initialText);
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    print(oldValue.text);
-    print(newValue.text);
-    print("no digits: ${newValue.text.replaceAll(RegExp(r"\D"), "")}");
-    if(newValue.text.replaceAll(RegExp(r"\D"), "").length > 10 && oldValue.text.replaceAll(RegExp(r"\D"), "").length == 10 && getMask() != cell){
-      updateMask(mask:cell);
-    } else if(newValue.text.replaceAll(RegExp(r"\D"), "").length <= 10 && oldValue.text.replaceAll(RegExp(r"\D"), "").length > 10 && getMask() != phone){
-      updateMask(mask:phone);
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // print(oldValue.text);
+    // print(newValue.text);
+    // print("no digits: ${newValue.text.replaceAll(RegExp(r"\D"), "")}");
+    if (newValue.text.replaceAll(RegExp(r"\D"), "").length > 10 &&
+        oldValue.text.replaceAll(RegExp(r"\D"), "").length == 10 &&
+        getMask() != cell) {
+      updateMask(mask: cell);
+    } else if (newValue.text.replaceAll(RegExp(r"\D"), "").length <= 10 &&
+        oldValue.text.replaceAll(RegExp(r"\D"), "").length > 10 &&
+        getMask() != phone) {
+      updateMask(mask: phone);
     }
 
     return super.formatEditUpdate(oldValue, newValue);
-
   }
-
 }
 
 String? validateEmpty(String? value, String fieldName) {
@@ -147,6 +143,6 @@ String? validateEmail(String? value, String fieldName) {
   }
   var emailRegex = RegExp(".+@.+", caseSensitive: false);
   value = value!.trim();
-  print(emailRegex.stringMatch(value));
+  // print(emailRegex.stringMatch(value));
   return !emailRegex.hasMatch(value) ? "Email inválido" : null;
 }

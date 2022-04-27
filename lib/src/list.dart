@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_lista/model/contact.dart';
 import 'package:flutter_lista/service/contact_service.dart';
@@ -33,17 +31,19 @@ class _ListaWidgetState extends State<ListaWidget> {
                       child: Dismissible(
                         key: Key(contact.phoneNumber ?? ''),
                         confirmDismiss: (direction) async {
-                          return await showModalBottomSheet(context: context, builder: (BuildContext context)  {
-                            return Container(
-                              color: Colors.red,
-                              child: ElevatedButton(
-                                child: Text('Apagar'),
-                                onPressed: (){
-                                  Navigator.pop(context,true);
-                                },
-                              ),
-                            );
-                          });
+                          return await showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  color: Colors.red,
+                                  child: ElevatedButton(
+                                    child: Text('Apagar'),
+                                    onPressed: () {
+                                      Navigator.pop(context, true);
+                                    },
+                                  ),
+                                );
+                              });
                         },
                         onDismissed: (direction) {
                           setState(() {
@@ -51,13 +51,15 @@ class _ListaWidgetState extends State<ListaWidget> {
                             contacts = contactService.getAll()!;
                           });
 
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Contato ${contact.name} deletado') ));
-
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text('Contato ${contact.name} deletado')));
                         },
                         background: Container(
                           color: Colors.red,
                           child: Padding(
-                            padding: const EdgeInsets.only(right: 20.0, left: 20.0),
+                            padding:
+                                const EdgeInsets.only(right: 20.0, left: 20.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -67,7 +69,7 @@ class _ListaWidgetState extends State<ListaWidget> {
                             ),
                           ),
                           alignment: Alignment.centerRight,
-                        ) ,
+                        ),
                         child: ListTile(
                           title: Text(contact.name),
                           subtitle:
