@@ -33,21 +33,14 @@ class ContactService {
 
   dynamic exportContactFile() async {
     // try {
-    FileStorage fileStorage = FileStorage();
-
     String _fileContent = _contacts[0]!.toJson().toString();
     print("CONTENT: " + _fileContent);
 
-    fileStorage.writeFile(_fileContent);
+    var _directory = await getApplicationDocumentsDirectory();
+    var exportFile = File( _directory.path + "/exportedContacts.txt");
+    print(exportFile);
 
-    File _exportFileName = File("exportedContacts.txt");
-    print(_exportFileName);
-
-    // var _directory = getApplicationDocumentsDirectory();
-    // var exportFile = _directory; // + "/exportedContacts.txt";
-    // print(exportFile);
-
-    await _exportFileName.writeAsString(_fileContent);
+    await exportFile.writeAsString(_fileContent);
     return true;
     // } on Exception catch (erro) {
     //   print("Errou essa parada aqui!\n\n $erro");

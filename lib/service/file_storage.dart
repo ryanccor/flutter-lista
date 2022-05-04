@@ -15,7 +15,7 @@ class FileStorage {
     print("_localFile() ==> START");
     final path = await _localPath;
     print("_localFile() ==> END");
-    return File('$path/contactsFile.txt');
+    return File('$path/exportedContacts.txt');
   }
 
   Future<String> readFile() async {
@@ -35,9 +35,10 @@ class FileStorage {
   Future<File> writeFile(String content) async {
     print("writeFile() ==> START");
     final file = await _localFile;
-    print(file);
+    print(await _localFile);
+    var write = file.writeAsString('$content');
     // Write the file
     print("writeFile() ==> END");
-    return file.writeAsString('$content');
+    return write;
   }
 }
