@@ -23,7 +23,6 @@ class ContactForm extends StatefulWidget {
   ContactForm(this.contact, {Key? key}) : super(key: key);
   final ContactService contactService = ContactService();
 
-
   final Contact? contact;
 
   @override
@@ -43,7 +42,7 @@ class _ContactFormState extends State<ContactForm> {
   Widget build(BuildContext context) {
     Contact? contact = widget.contact;
     if (contact != null) {
-      nameController.text = contact.name;
+      nameController.text = contact.name!;
       emailController.text = contact.email!;
       phoneController.text = contact.phoneNumber!;
     }
@@ -64,11 +63,7 @@ class _ContactFormState extends State<ContactForm> {
                     icon: Icon(Icons.mail), labelText: "Email"),
                 validator: (value) => validateEmail(value, "Email")),
             TextFormField(
-                inputFormatters: [
-                  telefoneMask
-                ],
-
-
+                inputFormatters: [telefoneMask],
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
@@ -80,7 +75,7 @@ class _ContactFormState extends State<ContactForm> {
                     if (contact != null) {
                       if (_formKey.currentState!.validate()) {
                         Contact updatedContact = Contact(
-                            contact.id, nameController.value.text,
+                            id:contact.id, name:nameController.value.text,
                             email: emailController.value.text,
                             phoneNumber: phoneController.value.text);
                         widget.contactService.update(updatedContact);
@@ -88,11 +83,11 @@ class _ContactFormState extends State<ContactForm> {
                         Navigator.pop(context);
                       }
                     } else if (_formKey.currentState!.validate()) {
-                      var newContact = {
-                        "name": nameController.value.text,
-                        "email": emailController.value.text,
-                        "phoneNumber": phoneController.value.text
-                      };
+                      Contact newContact = Contact(
+                        name: nameController.value.text,
+                        email: emailController.value.text,
+                        phoneNumber: phoneController.value.text,
+                      );
                       widget.contactService.save(newContact);
                       Navigator.pop(context);
                     }
@@ -105,35 +100,37 @@ class _ContactFormState extends State<ContactForm> {
   }
 }
 
-
 class CellPhoneMaskInputFormatter extends MaskTextInputFormatter {
-
   static String phone = "(##) ####-####";
   static String cell = "(##) #####-####";
 
-  CellPhoneMaskInputFormatter({
-    String? initialText
-  }): super(
-      mask: phone,
-      filter: {"#": RegExp('([0-9])'), 'P':RegExp('(([0-9])|([0-9][0-9]))')},
-      initialText: initialText
-  );
+  CellPhoneMaskInputFormatter({String? initialText})
+      : super(
+            mask: phone,
+            filter: {
+              "#": RegExp('([0-9])'),
+              'P': RegExp('(([0-9])|([0-9][0-9]))')
+            },
+            initialText: initialText);
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     print(oldValue.text);
     print(newValue.text);
     print("no digits: ${newValue.text.replaceAll(RegExp(r"\D"), "")}");
-    if(newValue.text.replaceAll(RegExp(r"\D"), "").length > 10 && oldValue.text.replaceAll(RegExp(r"\D"), "").length == 10 && getMask() != cell){
-      updateMask(mask:cell);
-    } else if(newValue.text.replaceAll(RegExp(r"\D"), "").length <= 10 && oldValue.text.replaceAll(RegExp(r"\D"), "").length > 10 && getMask() != phone){
-      updateMask(mask:phone);
+    if (newValue.text.replaceAll(RegExp(r"\D"), "").length > 10 &&
+        oldValue.text.replaceAll(RegExp(r"\D"), "").length == 10 &&
+        getMask() != cell) {
+      updateMask(mask: cell);
+    } else if (newValue.text.replaceAll(RegExp(r"\D"), "").length <= 10 &&
+        oldValue.text.replaceAll(RegExp(r"\D"), "").length > 10 &&
+        getMask() != phone) {
+      updateMask(mask: phone);
     }
 
     return super.formatEditUpdate(oldValue, newValue);
-
   }
-
 }
 
 String? validateEmpty(String? value, String fieldName) {
